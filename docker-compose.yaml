@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  bug-postgres:
+    container_name: bug-postgres.localhost
+    image: postgres:10.8
+    ports:
+      - 127.0.0.1:5432:5432
+    environment:
+      POSTGRES_USER: bug
+      POSTGRES_PASSWORD: bug
+      POSTGRES_DB: bug
+  flyway:
+    image: flyway/flyway:6.3-alpine
+    entrypoint: ''
+    depends_on:
+      - bug-postgres
+    volumes:
+      - "./migrations/conf/:/flyway/conf"
+      - "./migrations/schema/:/flyway/sql"
+      - "./migrations/test_data/:/flyway/test_data"
+    command: >
+      ash -c "
+        while ! nc -z bug-postgres.localhost 5432;
+        do
+          echo 'waiting for database to be up';
+          sleep 1;
+        done;
+        ./flyway migrate \
+            -url='jdbc:postgresql://bug-postgres.localhost:5432/bug?useUnicode=true&characterEncoding=utf8' \
+            -user=bug -password=bug \
+            -locations=filesystem:/flyway/sql,filesystem:/flyway/test_data
+      "
+  adminer:
+    image: adminer
+    ports:
+      - 8085:8080

@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: bug
+---
+testFramework: junit
+sourceLanguage: kotlin

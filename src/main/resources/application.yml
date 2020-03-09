@@ -1,0 +1,51 @@
+---
+micronaut:
+  application:
+    name: bug
+  views:
+    handlebars:
+      enabled: true
+
+jackson:
+  bean-introspection-module: true
+
+#logger:
+#  levels:
+#    io.micronaut.context.condition: DEBUG
+
+---
+micronaut:
+  security:
+    enabled: false
+    endpoints:
+      login:
+        enabled: true
+      oauth:
+        enabled: true
+    token:
+      jwt:
+        enabled: true
+        signatures:
+          secret:
+            generator:
+              secret: "${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}"
+
+---
+
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/bug
+    username: bug
+    password: bug
+    driverClassName: org.postgresql.Driver
+
+---
+#graphql:
+#  graphiql.enabled: true
+
+---
+micronaut:
+  io:
+    watch:
+      paths: src/main
+      restart: true
